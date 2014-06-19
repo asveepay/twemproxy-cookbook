@@ -1,0 +1,80 @@
+#! /bin/sh
+#
+# chkconfig: - 55 45
+# description:  Twitter's twemproxy nutcracker
+# processname: nutcracker
+# config: /etc/sysconfig/nutcracker
+
+# Source function library.
+#. /etc/rc.d/init.d/functions
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+NUTCRACKER_BIN=/usr/local/sbin/nutcracker
+PIDFILE="/var/run/nutcracker"
+USER="nobody"
+OPTIONS="-c /etc/nutcracker/nutcracker.yml -d -p $PIDFILE"
+
+
+if [ -f /etc/sysconfig/nutcracker ];then
+    . /etc/sysconfig/nutcracker
+fi
+
+# Check that networking is up.
+if [ "$NETWORKING" = "no" ]
+then
+    exit 0
+fi
+
+RETVAL=0
+prog="nutcracker"
+
+start () {
+    echo -n "Starting $prog: "
+    $NUTCRACKER_BIN $OPTIONS
+    RETVAL=$?
+    echo
+}
+stop () {
+    echo -n "Stopping $prog: "
+    kill `cat $PIDFILE`
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ] ; then
+    rm -f $PIDFILE
+    fi
+}
+
+restart () {
+    stop
+    start
+}
+
+status () {
+    status_of_proc -p $PIDFILE $NUTCRACKER_BIN nutcracker && exit 0 || exit $?
+}
+
+
+# See how we were called.
+case "$1" in
+    start)
+      start
+      ;;
+    stop)
+      stop
+      ;;
+    status)
+      status
+      ;;
+    restart|reload)
+      restart
+      ;;
+    condrestart)
+      [ -f /var/run/nutcracker ] && restart || :
+    ;;
+    *)
+      echo $"Usage: $0 {start|stop|status|restart|reload|condrestart}"
+      exit 1
+esac
+
+exit $?

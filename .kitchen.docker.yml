@@ -1,0 +1,17 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+  provision_command: curl -L http://www.opscode.com/chef/install.sh | bash
+  require_chef_omnibus: false
+
+platforms:
+  - name: ubuntu-12.04
+    driver_config:
+      image: ubuntu:precise
+      platform: ubuntu
+    run_list:
+      - recipe[twemproxy::default]
+
+suites:
+  - name: default
