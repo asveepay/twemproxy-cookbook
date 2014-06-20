@@ -10,8 +10,10 @@ Requirements
 * Serverspec
 * Berkshelf
 * vagrant-berkshelf plugin, version >= 2.0.1
+
 #### packages
 - `wget`
+
 ### Cookbooks
 * apt
 * build-essential
